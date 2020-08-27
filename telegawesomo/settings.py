@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from decouple import config
+from decouple import config, Csv
 from dj_database_url import parse as db_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'exchangerates_providers',
     'telegram_bot',
 ]
 
@@ -121,3 +122,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+TELEGRAM_TOKEN = config('TELEGRAM_TOKEN')
+
+EXCHANGE_RATE_CLIENT = config('EXCHANGE_RATE_CLIENT')
+EXCHANGE_RATE_CONFIG = config('EXCHANGE_RATE_CONFIG', cast=Csv(post_process=tuple))
