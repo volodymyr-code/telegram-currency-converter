@@ -25,8 +25,8 @@ def help(update, context):
                               "usage: 100 USD to UAH\n"
                               "usage: 100$ to UAH\n"
                               "usage: 100UAH to USD\n"
-                              "usage: /list"
-                              "usage: /history"
+                              "usage: /list\n"
+                              "usage: /history\n"
                               "")
 
 
