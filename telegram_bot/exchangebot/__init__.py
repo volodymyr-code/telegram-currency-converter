@@ -95,6 +95,7 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('start', help))
     dp.add_handler(CommandHandler(('list', 'lst'), rates))
     dp.add_handler(CommandHandler('history', history))
     dp.add_handler(CommandHandler('exchange', exchange, filters=Filters.text))
