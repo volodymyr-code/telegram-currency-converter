@@ -1,4 +1,3 @@
-import json
 import logging
 
 import requests
@@ -18,13 +17,9 @@ class OpenExchangeRatesClient(ExchangeRatesClient):
     def history(self, date, base_currency=BASE_CURRENCY):
         url = '{}/historical/{}.json?app_id={}&base={}'.format(self.API_URL, date, self.API_KEY, base_currency)
         logger.debug(url)
-        response = requests.get(url)
-        logger.debug(response.status_code, response.content)
-        return json.loads(response.content)['rates']
+        return requests.get(url).json()['rates']
 
     def execute(self, base_currency=BASE_CURRENCY):
         url = '{}latest.json?app_id={}&base={}'.format(self.API_URL, self.API_KEY, base_currency)
         logger.debug(url)
-        response = requests.get(url)
-        logger.debug(response.status_code, response.content)
-        return json.loads(response.content)['rates']
+        return requests.get(url).json()['rates']
