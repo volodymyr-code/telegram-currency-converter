@@ -1,3 +1,6 @@
+import tempfile
+
+import chartify
 import pandas
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -22,27 +25,22 @@ def exchange(request):
 
 
 def exchange_history(request):
+    currency = request.GET.get('target', 'UAH')
     provider = ExchangeRatesProvider()
-    result = provider.exchange_history(request.GET.get('target', 'CAD'))
+    result = provider.exchange_history(currency)
 
     chart_data = pandas.DataFrame(data={
         'dates': (line['date'] for line in result),
         'rates': (line['rate'] for line in result),
     })
-
-    from matplotlib import pyplot
-    import numpy
-    from io import StringIO
-
-    y = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-    x = numpy.arange(10)
-    fig = pyplot.figure()
-    ax = pyplot.subplot(111)
-    ax.plot(x, y, label='$y = numbers')
-    pyplot.title('Legend inside')
-    ax.legend()
-
-    buffer = StringIO()
-    fig.savefig(buffer, format='png')
-
-    return HttpResponse(content_type='image/png', content=buffer.read())
+    ch = chartify.Chart(blank_labels=True, x_axis_type='datetime')
+    ch.set_title('Date {} - {} currency {}'.format(result[0]['date'], result[-1]['date'], currency))
+    ch.plot.line(
+        data_frame=chart_data,
+        x_column='dates',
+        y_column='rates',
+    )
+    name = '{}/exchangerates_providers__{}.png'.format(tempfile.gettempdir(), result[-1]['date'])
+    ch.save(name, format='png')
+    with open(name, 'rb') as buffer:
+        return HttpResponse(content_type='image/png', content=buffer.read())
