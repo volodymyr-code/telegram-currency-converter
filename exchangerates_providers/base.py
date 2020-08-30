@@ -82,7 +82,6 @@ class ExchangeRatesProvider:
             rates_values: RatesDict = cache.get(cache_key)
             if not rates_values:
                 rates_values = self.client.history(date, base_currency)
-                # rates_values = {'CAD': 1.33}
                 cache.set(cache_key, rates_values, CACHE_TIMEOUT)
             result.append({
                 'date': date,
