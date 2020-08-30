@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import logging
 import os
 import tempfile
@@ -12,6 +11,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 # Enable logging
 from exchangerates_providers.base import ExchangeRatesProvider
 from exchangerates_providers.helpers import parse_request, ExchangeException
+from telegram_bot.models import MessageLog
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -68,14 +68,18 @@ def exchange(update, context):
     """Convert message to value"""
     message = update.message.text
     provider = ExchangeRatesProvider()
+    message_log = MessageLog.objects.create(payload=update.to_json())
     try:
         amount, base, target = parse_request(message)
         result = '{}: {:.2f}'.format(target, provider.exchange(amount, base, target))
         update.message.reply_text('{}: {:.2f}'.format(base, provider.get_rate(base, target)), quote=False)
         update.message.reply_text(result, quote=False)
+        message_log.bot_answer = result
     except ExchangeException:
         update.message.reply_text('Bad format!', quote=True)
-        return help(update, context)
+        message_log.bot_answer = 'bad format'
+        help(update, context)
+    message_log.save()
 
 
 def error(update, context):
