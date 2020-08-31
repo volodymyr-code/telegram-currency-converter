@@ -1,6 +1,4 @@
-# Telegram bot demo
-
-Telegram bot integrated into Django project
+# Telegram currency exchange bot
 
 1. Install requirements
 `pip install -r requirements.txt`
