@@ -1,4 +1,4 @@
-# Telegram currency exchange bot
+# Telegram currency converter bot
 
 1. Install requirements
 `pip install -r requirements.txt`
