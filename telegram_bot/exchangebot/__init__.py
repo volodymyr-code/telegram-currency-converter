@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 import logging
-import os
-import tempfile
-
-import chartify
-import pandas
 from django.conf import settings
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -42,26 +37,10 @@ def history(update, context):
     """Show png image with 7 day history /history is issued."""
     update.message.reply_text('Generating chart. Please wait...')
 
-    currency = 'CAD'
+    currency = 'UAH'
     provider = ExchangeRatesProvider()
     result = provider.exchange_history(currency)
-
-    name = '{}/exchangerates_providers__{}.png'.format(tempfile.gettempdir(), result[-1]['date'])
-    if not os.path.exists(name):
-        chart_data = pandas.DataFrame(data={
-            'dates': (line['date'] for line in result),
-            'rates': (line['rate'] for line in result),
-        })
-        ch = chartify.Chart(blank_labels=True, x_axis_type='datetime')
-        ch.set_title('Date {} - {} currency {}'.format(result[0]['date'], result[-1]['date'], currency))
-        ch.plot.line(
-            data_frame=chart_data,
-            x_column='dates',
-            y_column='rates',
-        )
-        # @todo find better way to generate png
-        ch.save(name, format='png')
-    context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(name, 'rb'))
+    update.message.reply_text('\n'.join(['{}'.format(v) for v in result]))
 
 
 def exchange(update, context):
